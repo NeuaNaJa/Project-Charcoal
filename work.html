@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบันทึกข้อมูลการทำงาน</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .slide-in {
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .pulse-animation {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .success-checkmark {
+            animation: checkmark 0.6s ease-in-out;
+        }
+
+        @keyframes checkmark {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        .profile-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid #667eea;
+        }
+
+        .work-card {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            color: white;
+            box-shadow: 0 10px 30px rgba(240, 147, 251, 0.3);
+        }
+
+        .work-card:nth-child(even) {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            box-shadow: 0 10px 30px rgba(79, 172, 254, 0.3);
+        }
+
+        .work-card:nth-child(3n) {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            box-shadow: 0 10px 30px rgba(67, 233, 123, 0.3);
+        }
+
+        .input-focus {
+            transition: all 0.3s ease;
+        }
+
+        .input-focus:focus {
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+
+        .btn-gradient:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <div class="text-center mb-8 fade-in">
+            <h1 class="text-4xl font-bold text-white mb-2">
+                <i class="fas fa-briefcase mr-3"></i>
+                ระบบบันทึกข้อมูลการทำงาน
+            </h1>
+            <p class="text-white/80 text-lg">จัดการข้อมูลการทำงานของคุณอย่างมีประสิทธิภาพ</p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Form Section -->
+            <div class="bg-white rounded-2xl shadow-2xl p-8 card-hover fade-in">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-plus-circle text-blue-500 mr-3"></i>
+                    เพิ่มข้อมูลการทำงาน
+                </h2>
+
+                <form id="workForm" class="space-y-6">
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="slide-in">
+                            <label class="block text-gray-700 font-medium mb-2">
+                                <i class="fas fa-calendar text-blue-500 mr-2"></i>วันที่
+                            </label>
+                            <input type="date" id="date" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent input-focus">
+                        </div>
+
+                        <div class="slide-in">
+                            <label class="block text-gray-700 font-medium mb-2">
+                                <i class="fas fa-user text-green-500 mr-2"></i>ชื่อ
+                            </label>
+                            <input type="text" id="name" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent input-focus"
+                                   placeholder="กรอกชื่อของคุณ">
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="slide-in">
+                            <label class="block text-gray-700 font-medium mb-2">
+                                <i class="fas fa-clock text-orange-500 mr-2"></i>เวลาเข้างาน
+                            </label>
+                            <input type="time" id="timeIn" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent input-focus">
+                        </div>
+
+                        <div class="slide-in">
+                            <label class="block text-gray-700 font-medium mb-2">
+                                <i class="fas fa-clock text-red-500 mr-2"></i>เวลาออกงาน
+                            </label>
+                            <input type="time" id="timeOut" required 
+                                   class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent input-focus">
+                        </div>
+                    </div>
+
+                    <div class="slide-in">
+                        <label class="block text-gray-700 font-medium mb-2">
+                            <i class="fas fa-map-marker-alt text-purple-500 mr-2"></i>สถานที่
+                        </label>
+                        <input type="text" id="location" required 
+                               class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent input-focus"
+                               placeholder="สถานที่ทำงาน">
+                    </div>
+
+                    <div class="slide-in">
+                        <label class="block text-gray-700 font-medium mb-2">
+                            <i class="fas fa-file-alt text-indigo-500 mr-2"></i>รายละเอียด
+                        </label>
+                        <textarea id="details" rows="4" required 
+                                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent input-focus"
+                                  placeholder="รายละเอียดงานที่ทำ"></textarea>
+                    </div>
+
+                    <div class="slide-in">
+                        <label class="block text-gray-700 font-medium mb-2">
+                            <i class="fas fa-image text-pink-500 mr-2"></i>รูปโปรไฟล์
+                        </label>
+                        <div class="flex items-center space-x-4">
+                            <input type="file" id="profileImage" accept="image/*" 
+                                   class="hidden" onchange="previewImage(this)">
+                            <label for="profileImage" 
+                                   class="cursor-pointer bg-gray-100 hover:bg-gray-200 px-4 py-3 rounded-lg border-2 border-dashed border-gray-300 hover:border-blue-500 transition-all duration-300 flex items-center">
+                                <i class="fas fa-upload mr-2 text-blue-500"></i>
+                                เลือกรูปภาพ
+                            </label>
+                            <div id="imagePreview" class="hidden">
+                                <img id="previewImg" class="profile-preview" alt="Preview">
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submitBtn" 
+                            class="w-full btn-gradient text-white font-bold py-4 px-6 rounded-lg flex items-center justify-center space-x-2">
+                        <i class="fas fa-save"></i>
+                        <span>บันทึกข้อมูล</span>
+                    </button>
+                </form>
+
+                <!-- Status Messages -->
+                <div id="statusMessage" class="mt-4 hidden"></div>
+            </div>
+
+            <!-- Data Display Section -->
+            <div class="bg-white rounded-2xl shadow-2xl p-8 card-hover fade-in">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                    <i class="fas fa-list text-green-500 mr-3"></i>
+                    ข้อมูลการทำงาน
+                </h2>
+
+                <div id="workDataContainer" class="space-y-4 max-h-96 overflow-y-auto">
+                    <div class="text-center text-gray-500 py-8">
+                        <i class="fas fa-inbox text-4xl mb-4"></i>
+                        <p>ยังไม่มีข้อมูลการทำงาน</p>
+                        <p class="text-sm">กรอกฟอร์มด้านซ้ายเพื่อเพิ่มข้อมูล</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwewrATuuhVTSCLH0ZJde64MndLnU873y-fvHKhTZ_Y-j4jWu7pJTb2T3TcpbwCI3VJDw/exec';
+        let workData = [];
+
+        // Set current date as default
+        document.getElementById('date').valueAsDate = new Date();
+
+        // Preview image function
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('imagePreview');
+                    const img = document.getElementById('previewImg');
+                    img.src = e.target.result;
+                    preview.classList.remove('hidden');
+                    preview.classList.add('fade-in');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // Convert file to base64
+        function fileToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = () => {
+                    const base64 = reader.result.split(',')[1];
+                    resolve({
+                        data: base64,
+                        name: file.name,
+                        type: file.type
+                    });
+                };
+                reader.onerror = error => reject(error);
+            });
+        }
+
+        // Show status message
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.className = `mt-4 p-4 rounded-lg ${type === 'success' ? 'bg-green-100 text-green-800' : 
+                                                        type === 'error' ? 'bg-red-100 text-red-800' : 
+                                                        'bg-blue-100 text-blue-800'}`;
+            statusDiv.innerHTML = message;
+            statusDiv.classList.remove('hidden');
+            statusDiv.classList.add('fade-in');
+
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        // Add work data to display
+        function addWorkDataToDisplay(data) {
+            const container = document.getElementById('workDataContainer');
+            
+            // Clear empty message if it exists
+            if (container.querySelector('.text-center')) {
+                container.innerHTML = '';
+            }
+
+            const workCard = document.createElement('div');
+            workCard.className = 'work-card slide-in';
+            
+            const profileImg = data.profileUrl ? 
+                `<img src="${data.profileUrl}" class="profile-preview mr-4" alt="Profile">` : 
+                `<div class="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mr-4">
+                    <i class="fas fa-user text-2xl"></i>
+                </div>`;
+
+            workCard.innerHTML = `
+                <div class="flex items-start">
+                    ${profileImg}
+                    <div class="flex-1">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-xl font-bold">${data.name}</h3>
+                            <span class="text-sm opacity-80">${data.date}</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mb-3">
+                            <div>
+                                <i class="fas fa-clock mr-2"></i>
+                                <span class="text-sm">เข้า: ${data.timeIn}</span>
+                            </div>
+                            <div>
+                                <i class="fas fa-clock mr-2"></i>
+                                <span class="text-sm">ออก: ${data.timeOut}</span>
+                            </div>
+                        </div>
+                        <div class="mb-2">
+                            <i class="fas fa-map-marker-alt mr-2"></i>
+                            <span class="text-sm">${data.location}</span>
+                        </div>
+                        <div class="text-sm opacity-90">
+                            <i class="fas fa-file-alt mr-2"></i>
+                            ${data.details}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            container.insertBefore(workCard, container.firstChild);
+            workData.unshift(data);
+        }
+
+        // Form submission
+        document.getElementById('workForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const submitBtn = document.getElementById('submitBtn');
+            const originalContent = submitBtn.innerHTML;
+            
+            // Show loading state
+            submitBtn.innerHTML = `
+                <div class="loading-spinner"></div>
+                <span>กำลังบันทึก...</span>
+            `;
+            submitBtn.disabled = true;
+
+            showStatus('<i class="fas fa-spinner fa-spin mr-2"></i>กำลังบันทึกข้อมูล...', 'info');
+
+            try {
+                const formData = {
+                    date: document.getElementById('date').value,
+                    name: document.getElementById('name').value,
+                    timeIn: document.getElementById('timeIn').value,
+                    timeOut: document.getElementById('timeOut').value,
+                    location: document.getElementById('location').value,
+                    details: document.getElementById('details').value,
+                    timestamp: new Date().toISOString()
+                };
+
+                // Handle profile image
+                const profileImageFile = document.getElementById('profileImage').files[0];
+                if (profileImageFile) {
+                    const imageData = await fileToBase64(profileImageFile);
+                    formData.profileImage = imageData;
+                }
+
+                // Send data using URLSearchParams
+                const params = new URLSearchParams();
+                params.append('data', JSON.stringify(formData));
+
+                const response = await fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    body: params
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showStatus(`
+                        <div class="flex items-center">
+                            <i class="fas fa-check-circle text-green-500 mr-2 success-checkmark"></i>
+                            บันทึกข้อมูลสำเร็จ!
+                        </div>
+                    `, 'success');
+
+                    // Add to display with profile URL if available
+                    const displayData = { ...formData };
+                    if (result.profileUrl) {
+                        displayData.profileUrl = result.profileUrl;
+                    }
+                    addWorkDataToDisplay(displayData);
+
+                    // Reset form
+                    document.getElementById('workForm').reset();
+                    document.getElementById('date').valueAsDate = new Date();
+                    document.getElementById('imagePreview').classList.add('hidden');
+                } else {
+                    throw new Error(result.error || 'เกิดข้อผิดพลาดในการบันทึก');
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                showStatus(`
+                    <div class="flex items-center">
+                        <i class="fas fa-exclamation-triangle text-red-500 mr-2"></i>
+                        เกิดข้อผิดพลาด: ${error.message}
+                    </div>
+                `, 'error');
+            } finally {
+                // Restore button
+                submitBtn.innerHTML = originalContent;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Add some sample data for demonstration
+        setTimeout(() => {
+            const sampleData = {
+                date: '2024-01-15',
+                name: 'สมชาย ใจดี',
+                timeIn: '08:00',
+                timeOut: '17:00',
+                location: 'สำนักงานใหญ่',
+                details: 'ประชุมวางแผนโครงการใหม่ และจัดทำเอกสารรายงาน',
+                timestamp: new Date().toISOString()
+            };
+            // addWorkDataToDisplay(sampleData);
+        }, 1000);
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'981b9cf3c66c8983',t:'MTc1ODMxMTQzNy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
