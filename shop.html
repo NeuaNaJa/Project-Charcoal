@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ระบบบันทึกการซื้อของ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .pulse-glow {
+            animation: pulseGlow 2s infinite;
+        }
+        
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 255, 255, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(255, 255, 255, 0.5); }
+        }
+        
+        .loading-spinner {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 3px solid white;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .image-preview {
+            max-width: 100px;
+            max-height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .purchase-item {
+            transition: all 0.3s ease;
+        }
+        
+        .purchase-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .back-fab{
+  position: fixed;
+  right: clamp(12px, 2.5vw, 24px); /* ระยะขอบขวาเป็นสัดส่วนตามหน้าจอ */
+  bottom: clamp(12px, 2.5vw, 28px); /* ระยะขอบล่าง */
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: clamp(8px, 1.2vw, 14px) clamp(12px, 2vw, 18px);
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  background: linear-gradient(135deg, #4f46e5 0%, #06b6d4 100%);
+  color: #fff;
+  font-weight: 600;
+  box-shadow: 0 8px 20px rgba(12, 12, 20, 0.18), 0 2px 6px rgba(0,0,0,0.08);
+  transform-origin: center;
+  transition: transform 200ms ease, box-shadow 200ms ease, opacity 200ms ease;
+  z-index: 9999; /* ให้ลอยเหนือเนื้อหา */
+  backdrop-filter: blur(6px);
+  -webkit-tap-highlight-color: transparent;
+  line-height: 1;
+}
+
+/* ไอคอน */
+.back-icon {
+  font-size: clamp(16px, 2.2vw, 20px);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: clamp(28px, 4.2vw, 36px);
+  height: clamp(28px, 4.2vw, 36px);
+  border-radius: 50%;
+  background: rgba(255,255,255,0.12);
+  box-shadow: inset 0 -2px 0 rgba(0,0,0,0.06);
+}
+
+/* ข้อความ */
+.back-text {
+  font-size: clamp(14px, 1.9vw, 16px);
+  white-space: nowrap;
+}
+
+/* hover / active */
+.back-fab:hover {
+  transform: translateY(-4px) scale(1.02);
+  box-shadow: 0 14px 30px rgba(12,12,20,0.22);
+}
+.back-fab:active {
+  transform: translateY(-1px) scale(0.98);
+}
+
+/* ซ่อนข้อความอัตโนมัติเมื่อขนาดเล็ก (mobile) — เหลือเป็นไอคอนอย่างเดียว */
+@media (max-width: 560px) {
+  .back-text { 
+    display: none;
+  }
+  .back-fab {
+    padding: clamp(8px, 1.8vw, 10px);
+  }
+}
+
+/* ปรับสีกับธีมมืด (ตัวอย่าง) */
+@media (prefers-color-scheme: dark) {
+  .back-fab {
+    background: linear-gradient(135deg, #2563eb 0%, #0891b2 100%);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  }
+}
+
+/* ลด motion ให้คนที่ตั้งค่าน้อยการเคลื่อนไหว */
+@media (prefers-reduced-motion: reduce) {
+  .back-fab, .back-fab:hover, .back-fab:active {
+    transition: none;
+    transform: none;
+  }
+}
+
+/* ตัวเลือก: ปุ่มเล็กลงเมื่อผู้ใช้ scroll ลง (optional) */
+body.scrolled .back-fab {
+  transform: translateY(0) scale(0.96);
+  opacity: 0.98;
+}
+    </style>
+</head>
+<body class="min-h-screen p-4">
+    <button class="back-fab" aria-label="ย้อนกลับ" id="backBtn">
+  <span class="back-text">ย้อนกลับ</span>
+</button>
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8 fade-in">
+            <h1 class="text-4xl font-bold text-white mb-2">📝 บันทึกการซื้อของ</h1>
+            <p class="text-white/80">บันทึกและติดตามการซื้อของ</p>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-8">
+            <!-- Form Section -->
+            <div class="glass-effect rounded-2xl p-6 fade-in">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center">
+                    <span class="mr-2">🛍️</span>
+                    เพิ่มข้อมูลการซื้อ
+                </h2>
+                
+                <form id="purchaseForm" class="space-y-4">
+                    <div>
+                        <label class="block text-white/90 text-sm font-medium mb-2">วันที่</label>
+                        <input type="date" id="date" required 
+                               class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-white/90 text-sm font-medium mb-2">ชื่อสินค้า</label>
+                        <input type="text" id="name" required placeholder="ระบุชื่อสินค้า"
+                               class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-white/90 text-sm font-medium mb-2">ราคา (บาท)</label>
+                            <input type="number" id="price" required placeholder="0.00" step="0.01"
+                                   class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-white/90 text-sm font-medium mb-2">จำนวน</label>
+                            <input type="number" id="quantity" required placeholder="1" min="1"
+                                   class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-white/90 text-sm font-medium mb-2">รายละเอียด</label>
+                        <textarea id="details" rows="3" placeholder="รายละเอียดเพิ่มเติม..."
+                                  class="w-full px-4 py-3 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/50 focus:outline-none focus:ring-2 focus:ring-white/30 transition-all resize-none"></textarea>
+                    </div>
+
+                    <div>
+                        <label class="block text-white/90 text-sm font-medium mb-2">รูปภาพ</label>
+                        <div class="relative">
+                            <input type="file" id="image" accept="image/*" 
+                                   class="hidden" onchange="handleImageSelect(event)">
+                            <button type="button" onclick="document.getElementById('image').click()"
+                                    class="w-full px-4 py-3 rounded-lg bg-white/10 border-2 border-dashed border-white/30 text-white/70 hover:bg-white/20 transition-all flex items-center justify-center">
+                                <span class="mr-2">📷</span>
+                                เลือกรูปภาพ
+                            </button>
+                        </div>
+                        <div id="imagePreview" class="mt-3 hidden">
+                            <img id="previewImg" class="image-preview mx-auto">
+                            <p id="fileName" class="text-white/70 text-sm text-center mt-2"></p>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="submitBtn"
+                            class="w-full bg-gradient-to-r from-pink-500 to-purple-600 text-white font-bold py-3 px-6 rounded-lg hover:from-pink-600 hover:to-purple-700 transition-all transform hover:scale-105 pulse-glow flex items-center justify-center">
+                        <span id="submitText">💾 บันทึกข้อมูล</span>
+                        <div id="loadingSpinner" class="loading-spinner ml-2 hidden"></div>
+                    </button>
+                </form>
+
+                <!-- Status Messages -->
+                <div id="statusMessage" class="mt-4 hidden"></div>
+            </div>
+
+            <!-- Data Display Section -->
+            <div class="glass-effect rounded-2xl p-6 fade-in">
+                <h2 class="text-2xl font-bold text-white mb-6 flex items-center justify-between">
+                    <span class="flex items-center">
+                        <span class="mr-2">📊</span>
+                        รายการการซื้อ
+                    </span>
+                    <span id="totalItems" class="text-sm bg-white/20 px-3 py-1 rounded-full">0 รายการ</span>
+                </h2>
+                
+                <div id="purchaseList" class="space-y-4 max-h-96 overflow-y-auto">
+                    <div class="text-center text-white/60 py-8">
+                        <div class="text-4xl mb-2">🛒</div>
+                        <p>ยังไม่มีข้อมูลการซื้อ</p>
+                        <p class="text-sm">เริ่มต้นด้วยการเพิ่มข้อมูลใหม่</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let purchases = [];
+        let selectedImageData = null;
+
+        // Set today's date as default
+        document.getElementById('date').valueAsDate = new Date();
+
+        function handleImageSelect(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Check file size (limit to 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    showStatus('ไฟล์รูปภาพใหญ่เกินไป (สูงสุด 5MB)', 'error');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    selectedImageData = {
+                        data: e.target.result.split(',')[1], // Remove data:image/...;base64, prefix
+                        name: file.name,
+                        type: file.type
+                    };
+                    
+                    // Show preview
+                    document.getElementById('previewImg').src = e.target.result;
+                    document.getElementById('fileName').textContent = file.name;
+                    document.getElementById('imagePreview').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function showStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('statusMessage');
+            statusDiv.className = `mt-4 p-4 rounded-lg ${type === 'error' ? 'bg-red-500/20 border border-red-500/30 text-red-100' : 
+                                                        type === 'success' ? 'bg-green-500/20 border border-green-500/30 text-green-100' : 
+                                                        'bg-blue-500/20 border border-blue-500/30 text-blue-100'}`;
+            statusDiv.textContent = message;
+            statusDiv.classList.remove('hidden');
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusDiv.classList.add('hidden');
+                }, 3000);
+            }
+        }
+
+        function setLoading(isLoading) {
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            
+            if (isLoading) {
+                submitBtn.disabled = true;
+                submitBtn.classList.add('opacity-75', 'cursor-not-allowed');
+                submitText.textContent = 'กำลังบันทึก...';
+                loadingSpinner.classList.remove('hidden');
+            } else {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('opacity-75', 'cursor-not-allowed');
+                submitText.textContent = '💾 บันทึกข้อมูล';
+                loadingSpinner.classList.add('hidden');
+            }
+        }
+
+        async function submitToGoogleSheets(formData) {
+            const scriptUrl = 'https://script.google.com/macros/s/AKfycbxCPwWDSYjmk5tWPkmSS9lXmTT5o_4kqzKdDBWOy68llM9DEtYTyS-NTmKVXJ3jY5QP/exec';
+            
+            try {
+                const response = await fetch(scriptUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: formData.toString()
+                });
+                
+                const result = await response.text();
+                return { success: true, data: result };
+            } catch (error) {
+                console.error('Error:', error);
+                return { success: false, error: error.message };
+            }
+        }
+
+        document.getElementById('purchaseForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            setLoading(true);
+            showStatus('กำลังบันทึกข้อมูล...', 'info');
+            
+            const formData = new URLSearchParams();
+            formData.append('date', document.getElementById('date').value);
+            formData.append('name', document.getElementById('name').value);
+            formData.append('price', document.getElementById('price').value);
+            formData.append('quantity', document.getElementById('quantity').value);
+            formData.append('details', document.getElementById('details').value);
+            
+            // Add image data if selected
+            if (selectedImageData) {
+                formData.append('imageData', selectedImageData.data);
+                formData.append('imageName', selectedImageData.name);
+                formData.append('imageType', selectedImageData.type);
+            }
+            
+            const result = await submitToGoogleSheets(formData);
+            
+            if (result.success) {
+                // Add to local display
+                const purchase = {
+                    id: Date.now(),
+                    date: document.getElementById('date').value,
+                    name: document.getElementById('name').value,
+                    price: parseFloat(document.getElementById('price').value),
+                    quantity: parseInt(document.getElementById('quantity').value),
+                    details: document.getElementById('details').value,
+                    image: selectedImageData ? URL.createObjectURL(new Blob([Uint8Array.from(atob(selectedImageData.data), c => c.charCodeAt(0))], {type: selectedImageData.type})) : null,
+                    timestamp: new Date()
+                };
+                
+                purchases.unshift(purchase);
+                displayPurchases();
+                
+                // Reset form
+                document.getElementById('purchaseForm').reset();
+                document.getElementById('date').valueAsDate = new Date();
+                document.getElementById('imagePreview').classList.add('hidden');
+                selectedImageData = null;
+                
+                showStatus('บันทึกข้อมูลสำเร็จ! 🎉', 'success');
+            } else {
+                showStatus('เกิดข้อผิดพลาดในการบันทึก: ' + (result.error || 'ไม่ทราบสาเหตุ'), 'error');
+            }
+            
+            setLoading(false);
+        });
+
+        function displayPurchases() {
+            const listContainer = document.getElementById('purchaseList');
+            const totalItems = document.getElementById('totalItems');
+            
+            if (purchases.length === 0) {
+                listContainer.innerHTML = `
+                    <div class="text-center text-white/60 py-8">
+                        <div class="text-4xl mb-2">🛒</div>
+                        <p>ยังไม่มีข้อมูลการซื้อ</p>
+                        <p class="text-sm">เริ่มต้นด้วยการเพิ่มข้อมูลใหม่</p>
+                    </div>
+                `;
+                totalItems.textContent = '0 รายการ';
+                return;
+            }
+            
+            totalItems.textContent = `${purchases.length} รายการ`;
+            
+            listContainer.innerHTML = purchases.map(purchase => `
+                <div class="purchase-item glass-effect rounded-xl p-4 slide-in">
+                    <div class="flex items-start space-x-4">
+                        ${purchase.image ? `
+                            <img src="${purchase.image}" alt="${purchase.name}" class="image-preview flex-shrink-0">
+                        ` : `
+                            <div class="w-16 h-16 bg-white/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                                <span class="text-2xl">📦</span>
+                            </div>
+                        `}
+                        <div class="flex-1 min-w-0">
+                            <div class="flex justify-between items-start mb-2">
+                                <h3 class="text-white font-semibold text-lg truncate">${purchase.name}</h3>
+                                <span class="text-green-300 font-bold text-lg ml-2">฿${purchase.price.toLocaleString()}</span>
+                            </div>
+                            <div class="flex items-center space-x-4 text-white/70 text-sm mb-2">
+                                <span>📅 ${new Date(purchase.date).toLocaleDateString('th-TH')}</span>
+                                <span>📦 ${purchase.quantity} ชิ้น</span>
+                                <span class="text-yellow-300">💰 รวม ฿${(purchase.price * purchase.quantity).toLocaleString()}</span>
+                            </div>
+                            ${purchase.details ? `
+                                <p class="text-white/60 text-sm">${purchase.details}</p>
+                            ` : ''}
+                            <p class="text-white/40 text-xs mt-2">
+                                เพิ่มเมื่อ ${purchase.timestamp.toLocaleString('th-TH')}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Initialize display
+        displayPurchases();
+
+        document.getElementById('backBtn').addEventListener('click', function () {
+    if (history.length > 1) history.back();
+    else window.location.href = '/';
+  });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'981c27ba905dfd83',t:'MTc1ODMxNzEyMi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

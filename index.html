@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Project Charcoal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Kanit', sans-serif;
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-10px) scale(1.02);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .float-animation:nth-child(2) {
+            animation-delay: -1s;
+        }
+        
+        .float-animation:nth-child(3) {
+            animation-delay: -2s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .pulse-glow {
+            animation: pulse-glow 2s ease-in-out infinite alternate;
+            border-radius: 40px;
+            height: 90px;
+            align-items: center;
+            justify-content: center;
+            align-content: center;
+            max-width: 700px;
+            margin: auto;
+        }
+        
+        @keyframes pulse-glow {
+            from { box-shadow: 0 0 20px rgba(255,255,255,0.3); }
+            to { box-shadow: 0 0 30px rgba(255,255,255,0.6); }
+        }
+        
+        .slide-in {
+            animation: slideIn 0.8s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .bounce-in {
+            animation: bounceIn 1s ease-out;
+        }
+        
+        @keyframes bounceIn {
+            0% { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 1; transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+    </style>
+</head>
+<body class="gradient-bg min-h-screen">
+    <!-- Header -->
+    <header class="slide-in">
+        <div class="container mx-auto px-4 py-6">
+            <div class="text-center">
+                <h1 class="text-4xl md:text-6xl font-bold text-white mb-4 pulse-glow">
+                    🌟 Project Charcoal 🌟
+                </h1>
+                <p class="text-xl md:text-2xl text-white/90 font-light">
+                    จัดการการทำงาน
+                </p>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- Welcome Section -->
+        <div class="text-center mb-12 bounce-in">
+            <div class="bg-white/20 backdrop-blur-lg rounded-3xl p-8 mb-8 border border-white/30">
+                <h2 class="text-3xl md:text-4xl font-semibold text-white mb-4">
+                    ยินดีต้อนรับสู่ Website 🎉
+                </h2>
+                <p class="text-lg text-white/90 leading-relaxed">
+                    เริ่มต้นด้วยการจัดการงาน รายรับ และรายจ่าย
+                </p>
+            </div>
+        </div>
+
+        <!-- Menu Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto">
+            <!-- Work Card -->
+             <a href="work.html" target="_blank">
+            <div class="card-hover float-animation">
+                <div class="bg-gradient-to-br from-orange-400 to-pink-500 rounded-3xl p-8 text-center shadow-2xl border-4 border-white/20">
+                    <div class="text-6xl mb-6">💼</div>
+                    <h3 class="text-2xl font-bold text-white mb-4">การทำงาน</h3>
+                    <p class="text-white/90 mb-6 leading-relaxed">
+                        บันทึกเวลาและการทำงาน
+                    </p>
+                    <button onclick="navigateToWork()" class="bg-white text-orange-500 font-semibold py-3 px-8 rounded-full hover:bg-orange-50 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        เริ่มทำงาน 🚀
+                    </button>
+                </div>
+            </div>
+            </a>
+
+            <a href="shop.html" target="_blank"><!-- Expenses Card -->
+            <div class="card-hover float-animation">
+                <div class="bg-gradient-to-br from-red-400 to-purple-500 rounded-3xl p-8 text-center shadow-2xl border-4 border-white/20">
+                    <div class="text-6xl mb-6">🛒</div>
+                    <h3 class="text-2xl font-bold text-white mb-4">รายจ่าย</h3>
+                    <p class="text-white/90 mb-6 leading-relaxed">
+                        ติดตามและบันทึกค่าใช้จ่าย
+                    </p>
+                    <button onclick="navigateToShop()" class="bg-white text-red-500 font-semibold py-3 px-8 rounded-full hover:bg-red-50 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        จัดการรายจ่าย 💳
+                    </button>
+                </div>
+            </div>
+            </a>
+
+            <a href="give.html" target="_blank"><!-- Income Card -->
+            <div class="card-hover float-animation">
+                <div class="bg-gradient-to-br from-green-400 to-blue-500 rounded-3xl p-8 text-center shadow-2xl border-4 border-white/20">
+                    <div class="text-6xl mb-6">💰</div>
+                    <h3 class="text-2xl font-bold text-white mb-4">รายรับ</h3>
+                    <p class="text-white/90 mb-6 leading-relaxed">
+                        บันทึกและติดตามรายได้
+                    </p>
+                    <button onclick="navigateToGive()" class="bg-white text-green-500 font-semibold py-3 px-8 rounded-full hover:bg-green-50 transition-all duration-300 transform hover:scale-105 shadow-lg">
+                        จัดการรายรับ 📈
+                    </button>
+                </div>
+            </div>
+            </a>
+        </div>
+
+        <!-- Stats Section -->
+        
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-16 pb-8">
+        <div class="container mx-auto px-4 text-center">
+            <div class="bg-white/10 backdrop-blur-lg rounded-2xl p-6 border border-white/20">
+                <p class="text-white/80 text-lg">
+                    🌈 สร้างชีวิตที่มีสีสันไปด้วยกัน 🌈
+                </p>
+                <div class="mt-4 flex justify-center space-x-4">
+                    <span class="text-2xl animate-bounce">🎯</span>
+                    <span class="text-2xl animate-bounce" style="animation-delay: 0.1s;">✨</span>
+                    <span class="text-2xl animate-bounce" style="animation-delay: 0.2s;">🚀</span>
+                    <span class="text-2xl animate-bounce" style="animation-delay: 0.3s;">💫</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Navigation functions
+        function navigateToWork() {
+            // Since we can't actually navigate to external files in this environment,
+            // we'll show a friendly message
+            showNavigationMessage('การทำงาน', '💼', 'work.html');
+        }
+
+        function navigateToShop() {
+            showNavigationMessage('รายจ่าย', '🛒', 'shop.html');
+        }
+
+        function navigateToGive() {
+            showNavigationMessage('รายรับ', '💰', 'give.html');
+        }
+
+        function showNavigationMessage(section, icon, filename) {
+            // Create modal overlay
+            const overlay = document.createElement('div');
+            overlay.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4';
+            
+            // Create modal content
+            overlay.innerHTML = `
+                <div class="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl bounce-in">
+                    <div class="text-6xl mb-4">${icon}</div>
+                    <h3 class="text-2xl font-bold text-gray-800 mb-4">เตรียมไปยัง${section}</h3>
+                    <p class="text-gray-600 mb-6">ในสภาพแวดล้อมจริง ระบบจะนำคุณไปยังหน้า ${filename}</p>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            class="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-3 px-8 rounded-full hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105">
+                        เข้าใจแล้ว ✨
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (overlay.parentElement) {
+                    overlay.remove();
+                }
+            }, 5000);
+        }
+
+        // Add some interactive sparkles
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.innerHTML = '✨';
+            sparkle.className = 'fixed text-2xl pointer-events-none z-10';
+            sparkle.style.left = Math.random() * window.innerWidth + 'px';
+            sparkle.style.top = Math.random() * window.innerHeight + 'px';
+            sparkle.style.animation = 'sparkle 2s ease-out forwards';
+            
+            document.body.appendChild(sparkle);
+            
+            setTimeout(() => sparkle.remove(), 2000);
+        }
+
+        // Add sparkle animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes sparkle {
+                0% { opacity: 0; transform: scale(0) rotate(0deg); }
+                50% { opacity: 1; transform: scale(1) rotate(180deg); }
+                100% { opacity: 0; transform: scale(0) rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Create sparkles periodically
+        setInterval(createSparkle, 3000);
+
+        // Add click effect to buttons
+        document.addEventListener('click', function(e) {
+            if (e.target.tagName === 'BUTTON') {
+                createSparkle();
+            }
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'981c645034879aaf',t:'MTc1ODMxOTYwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>

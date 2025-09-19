@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📊 บันทึกรายรับ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Kanit', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .glass-card {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+        }
+        
+        .income-item {
+            animation: slideInUp 0.5s ease-out;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+        
+        .form-input {
+            background: rgba(255, 255, 255, 0.9);
+            border: 2px solid transparent;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .loading-spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .success-animation {
+            animation: bounce 0.6s ease-in-out;
+        }
+        
+        @keyframes bounce {
+            0%, 20%, 60%, 100% {
+                transform: translateY(0);
+            }
+            40% {
+                transform: translateY(-10px);
+            }
+            80% {
+                transform: translateY(-5px);
+            }
+        }
+    </style>
+</head>
+<body class="p-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl md:text-5xl font-bold text-white mb-2">💰 บันทึกรายรับ</h1>
+            <p class="text-white/80 text-lg">จัดการข้อมูลรายรับของคุณอย่างง่ายดาย</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <!-- Form Section -->
+            <div class="glass-card p-6">
+                <h2 class="text-2xl font-semibold text-white mb-6 flex items-center">
+                    <span class="mr-2">📝</span> เพิ่มรายรับใหม่
+                </h2>
+                
+                <form id="incomeForm" class="space-y-4">
+                    <div>
+                        <label class="block text-white font-medium mb-2">📅 วันที่</label>
+                        <input type="date" id="date" class="form-input w-full px-4 py-3 rounded-xl focus:outline-none" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white font-medium mb-2">💵 จำนวนเงิน (บาท)</label>
+                        <input type="number" id="amount" placeholder="0.00" step="0.01" class="form-input w-full px-4 py-3 rounded-xl focus:outline-none" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white font-medium mb-2">📦 จำนวนสิ่งของ</label>
+                        <input type="number" id="quantity" placeholder="1" class="form-input w-full px-4 py-3 rounded-xl focus:outline-none" required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white font-medium mb-2">📋 รายละเอียด</label>
+                        <textarea id="description" placeholder="อธิบายรายละเอียดรายรับ..." class="form-input w-full px-4 py-3 rounded-xl focus:outline-none h-24 resize-none" required></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-white font-medium mb-2">🖼️ รูปภาพ (ไม่บังคับ)</label>
+                        <input type="file" id="image" accept="image/*" class="form-input w-full px-4 py-3 rounded-xl focus:outline-none file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-violet-50 file:text-violet-700 hover:file:bg-violet-100">
+                    </div>
+                    
+                    <button type="submit" id="submitBtn" class="btn-gradient w-full py-4 px-6 rounded-xl text-white font-semibold text-lg flex items-center justify-center space-x-2">
+                        <span id="submitText">💾 บันทึกข้อมูล</span>
+                        <div id="loadingSpinner" class="loading-spinner hidden"></div>
+                    </button>
+                </form>
+                
+                <!-- Status Messages -->
+                <div id="statusMessage" class="mt-4 p-4 rounded-xl hidden"></div>
+            </div>
+
+            <!-- Data Display Section -->
+            <div class="glass-card p-6">
+                <h2 class="text-2xl font-semibold text-white mb-6 flex items-center justify-between">
+                    <span><span class="mr-2">📊</span> รายการรายรับ</span>
+                    <span id="totalAmount" class="text-lg bg-white/20 px-3 py-1 rounded-full">รวม: ฿0</span>
+                </h2>
+                
+                <div id="incomeList" class="space-y-4 max-h-96 overflow-y-auto">
+                    <div class="text-center text-white/60 py-8">
+                        <div class="text-4xl mb-2">📝</div>
+                        <p>ยังไม่มีข้อมูลรายรับ</p>
+                        <p class="text-sm">เริ่มต้นโดยการเพิ่มรายรับแรกของคุณ!</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCRmdQh4tt4wayV9vtOdlXBME1KHuLQbcM-sr68GInxF5MTze1BkVFEu1-uY4n93nC/exec';
+        
+        // Global variables
+        let incomeData = JSON.parse(localStorage.getItem('incomeData')) || [];
+        let totalAmount = 0;
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set today's date as default
+            document.getElementById('date').valueAsDate = new Date();
+            
+            // Load existing data
+            displayIncomeData();
+            updateTotal();
+        });
+
+        // Form submission
+        document.getElementById('incomeForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            const loadingSpinner = document.getElementById('loadingSpinner');
+            const statusMessage = document.getElementById('statusMessage');
+            
+            // Show loading state
+            submitBtn.disabled = true;
+            submitText.textContent = '⏳ กำลังบันทึก...';
+            loadingSpinner.classList.remove('hidden');
+            
+            try {
+                // Get form data
+                const formData = {
+                    date: document.getElementById('date').value,
+                    amount: parseFloat(document.getElementById('amount').value),
+                    quantity: parseInt(document.getElementById('quantity').value),
+                    description: document.getElementById('description').value,
+                    timestamp: new Date().toISOString()
+                };
+                
+                // Handle image upload
+                const imageFile = document.getElementById('image').files[0];
+                let imageData = null;
+                
+                if (imageFile) {
+                    imageData = await convertToBase64(imageFile);
+                }
+                
+                // Prepare data for Apps Script
+                const params = new URLSearchParams();
+                params.append('date', formData.date);
+                params.append('amount', formData.amount);
+                params.append('quantity', formData.quantity);
+                params.append('description', formData.description);
+                params.append('timestamp', formData.timestamp);
+                
+                if (imageData) {
+                    params.append('imageData', imageData.data);
+                    params.append('imageName', imageData.name);
+                    params.append('imageMimeType', imageData.mimeType);
+                }
+                
+                // Send to Apps Script
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: params.toString()
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Add image URL if available
+                    if (result.imageUrl) {
+                        formData.imageUrl = result.imageUrl;
+                    }
+                    
+                    // Add to local storage
+                    incomeData.unshift(formData);
+                    localStorage.setItem('incomeData', JSON.stringify(incomeData));
+                    
+                    // Update display
+                    displayIncomeData();
+                    updateTotal();
+                    
+                    // Reset form
+                    document.getElementById('incomeForm').reset();
+                    document.getElementById('date').valueAsDate = new Date();
+                    
+                    // Show success message
+                    showStatusMessage('✅ บันทึกข้อมูลสำเร็จ!', 'success');
+                } else {
+                    throw new Error(result.error || 'เกิดข้อผิดพลาดในการบันทึก');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                showStatusMessage('❌ เกิดข้อผิดพลาด: ' + error.message, 'error');
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitText.textContent = '💾 บันทึกข้อมูล';
+                loadingSpinner.classList.add('hidden');
+            }
+        });
+
+        // Convert file to base64
+        function convertToBase64(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    const base64Data = reader.result.split(',')[1]; // Remove data:image/jpeg;base64, prefix
+                    resolve({
+                        data: base64Data,
+                        name: file.name,
+                        mimeType: file.type
+                    });
+                };
+                reader.onerror = reject;
+                reader.readAsDataURL(file);
+            });
+        }
+
+        // Display income data
+        function displayIncomeData() {
+            const incomeList = document.getElementById('incomeList');
+            
+            if (incomeData.length === 0) {
+                incomeList.innerHTML = `
+                    <div class="text-center text-white/60 py-8">
+                        <div class="text-4xl mb-2">📝</div>
+                        <p>ยังไม่มีข้อมูลรายรับ</p>
+                        <p class="text-sm">เริ่มต้นโดยการเพิ่มรายรับแรกของคุณ!</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            incomeList.innerHTML = incomeData.map((item, index) => `
+                <div class="income-item p-4 rounded-xl shadow-lg">
+                    <div class="flex justify-between items-start mb-2">
+                        <div class="flex-1">
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-lg font-semibold text-gray-800">฿${item.amount.toLocaleString()}</span>
+                                <span class="text-sm text-gray-600">${formatDate(item.date)}</span>
+                            </div>
+                            <p class="text-gray-700 mb-1">${item.description}</p>
+                            <p class="text-sm text-gray-600">จำนวน: ${item.quantity} ชิ้น</p>
+                        </div>
+                        <button onclick="deleteIncome(${index})" class="ml-4 text-red-500 hover:text-red-700 text-xl">🗑️</button>
+                    </div>
+                    ${item.imageUrl ? `
+                        <div class="mt-3">
+                            <img src="${item.imageUrl}" alt="รูปภาพรายรับ" class="w-full h-32 object-cover rounded-lg">
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // Update total amount
+        function updateTotal() {
+            totalAmount = incomeData.reduce((sum, item) => sum + item.amount, 0);
+            document.getElementById('totalAmount').textContent = `รวม: ฿${totalAmount.toLocaleString()}`;
+        }
+
+        // Delete income item
+        function deleteIncome(index) {
+            if (confirm('คุณต้องการลบรายการนี้หรือไม่?')) {
+                incomeData.splice(index, 1);
+                localStorage.setItem('incomeData', JSON.stringify(incomeData));
+                displayIncomeData();
+                updateTotal();
+                showStatusMessage('🗑️ ลบรายการสำเร็จ', 'success');
+            }
+        }
+
+        // Format date
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('th-TH', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+
+        // Show status message
+        function showStatusMessage(message, type) {
+            const statusMessage = document.getElementById('statusMessage');
+            statusMessage.className = `mt-4 p-4 rounded-xl ${type === 'success' ? 'bg-green-500/20 text-green-100 border border-green-500/30' : 'bg-red-500/20 text-red-100 border border-red-500/30'}`;
+            statusMessage.textContent = message;
+            statusMessage.classList.remove('hidden');
+            
+            if (type === 'success') {
+                statusMessage.classList.add('success-animation');
+            }
+            
+            setTimeout(() => {
+                statusMessage.classList.add('hidden');
+                statusMessage.classList.remove('success-animation');
+            }, 3000);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'981c932ff68c5fba',t:'MTc1ODMyMTUyMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
