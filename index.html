@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="th">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Work Log — บันทึกการทำงาน</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <main class="container">
+    <header class="header">
+      <h1>Work Log — บันทึกการทำงาน</h1>
+      <p class="subtitle">กรอกข้อมูลแล้วกด <strong>บันทึก</strong> เพื่อส่งไปยัง Google Sheets</p>
+    </header>
+
+    <section class="card form-card">
+      <form id="workForm" autocomplete="off">
+        <div class="row">
+          <label>วันที่
+            <input type="date" id="date" name="date" required />
+          </label>
+          <label>ชื่อ
+            <input type="text" id="name" name="name" placeholder="ชื่อ — นามสกุล" required />
+          </label>
+        </div>
+
+        <div class="row">
+          <label>เวลาเข้างาน
+            <input type="time" id="timeIn" name="timeIn" required />
+          </label>
+          <label>เวลาออกงาน
+            <input type="time" id="timeOut" name="timeOut" required />
+          </label>
+        </div>
+
+        <label>รายละเอียด
+          <textarea id="details" name="details" rows="3" placeholder="บันทึกรายละเอียดงาน"></textarea>
+        </label>
+
+        <label>สถานที่
+          <input type="text" id="location" name="location" placeholder="เช่น สำนักงาน/ไซต์งาน/ออนไลน์" />
+        </label>
+
+        <label class="file-label">รูปโปรไฟล์ (jpg/png)
+          <input type="file" id="profileFile" accept="image/*" />
+        </label>
+
+        <div class="preview-row">
+          <div id="previewContainer" class="preview">
+            <img id="profilePreview" alt="preview" />
+          </div>
+          <div class="status" id="status">สถานะ: พร้อมส่ง</div>
+        </div>
+
+        <div class="actions">
+          <button type="submit" id="submitBtn" class="btn primary">บันทึก</button>
+          <button type="button" id="clearBtn" class="btn">เคลียร์ฟอร์ม</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card list-card">
+      <h2>รายการที่บันทึก (เรียงตามเวลาที่บันทึกล่าสุด)</h2>
+      <div id="entries" class="entries"></div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
