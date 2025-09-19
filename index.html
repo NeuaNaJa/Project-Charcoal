@@ -179,48 +179,7 @@
     </footer>
 
     <script>
-        // Navigation functions
-        function navigateToWork() {
-            // Since we can't actually navigate to external files in this environment,
-            // we'll show a friendly message
-            showNavigationMessage('การทำงาน', '💼', 'work.html');
-        }
-
-        function navigateToShop() {
-            showNavigationMessage('รายจ่าย', '🛒', 'shop.html');
-        }
-
-        function navigateToGive() {
-            showNavigationMessage('รายรับ', '💰', 'give.html');
-        }
-
-        function showNavigationMessage(section, icon, filename) {
-            // Create modal overlay
-            const overlay = document.createElement('div');
-            overlay.className = 'fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 p-4';
-            
-            // Create modal content
-            overlay.innerHTML = `
-                <div class="bg-white rounded-3xl p-8 max-w-md w-full text-center shadow-2xl bounce-in">
-                    <div class="text-6xl mb-4">${icon}</div>
-                    <h3 class="text-2xl font-bold text-gray-800 mb-4">เตรียมไปยัง${section}</h3>
-                    <p class="text-gray-600 mb-6">ในสภาพแวดล้อมจริง ระบบจะนำคุณไปยังหน้า ${filename}</p>
-                    <button onclick="this.parentElement.parentElement.remove()" 
-                            class="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold py-3 px-8 rounded-full hover:from-purple-600 hover:to-pink-600 transition-all duration-300 transform hover:scale-105">
-                        เข้าใจแล้ว ✨
-                    </button>
-                </div>
-            `;
-            
-            document.body.appendChild(overlay);
-            
-            // Auto remove after 5 seconds
-            setTimeout(() => {
-                if (overlay.parentElement) {
-                    overlay.remove();
-                }
-            }, 5000);
-        }
+        
 
         // Add some interactive sparkles
         function createSparkle() {
@@ -259,3 +218,4 @@
     </script>
 <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'981c645034879aaf',t:'MTc1ODMxOTYwMy4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
+
